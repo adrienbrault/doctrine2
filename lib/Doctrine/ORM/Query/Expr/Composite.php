@@ -34,16 +34,49 @@ namespace Doctrine\ORM\Query\Expr;
  */
 class Composite extends Base
 {
+    public function add($arg)
+    {
+        if ( $arg !== null || ($arg instanceof Base && $arg->count() > 0) ) {
+            // If we decide to keep Expr\Base instances, we can use this check
+
+            $orderPriority = 0;
+            if (is_array($arg) && isset($arg[1])) {
+                $orderPriority = (int) $arg[1];
+                $arg = $arg[0];
+            }
+
+            if ( ! is_string($arg)) {
+                $class = get_class($arg);
+
+                if ( ! in_array($class, $this->_allowedClasses)) {
+                    throw new \InvalidArgumentException("Expression of type '$class' not allowed in this context.");
+                }
+            }
+
+            $this->_parts[] = array(
+                'part' => $arg,
+                'order_priority' => $orderPriority,
+            );
+        }
+
+        return $this;
+    }
+
     public function __toString()
     {
         if ($this->count() === 1) {
-            return (string) $this->_parts[0];
+            return (string) $this->_parts[0]['part'];
         }
+
+        $sortedParts = $this->_parts;
+        usort($sortedParts, function($row1, $row2) {
+            return $row1['order_priority'] <= $row2['order_priority'] ? 1 : -1;
+        });
 
         $components = array();
 
-        foreach ($this->_parts as $part) {
-            $components[] = $this->processQueryPart($part);
+        foreach ($sortedParts as $part) {
+            $components[] = $this->processQueryPart($part['part']);
         }
 
         return implode($this->_separator, $components);

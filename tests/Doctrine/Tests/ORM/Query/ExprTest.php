@@ -114,6 +114,21 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('1 = 1 AND 2 = 2', (string) $this->_expr->andx((string) $this->_expr->eq(1, 1), (string) $this->_expr->eq(2, 2)));
     }
 
+    public function testAndOrderPriority1Expr()
+    {
+        $this->assertEquals('1 = 1 AND 2 = 2', (string) $this->_expr->andx(array((string) $this->_expr->eq(1, 1), 1), array((string) $this->_expr->eq(2, 2), 1)));
+    }
+
+    public function testAndOrderPriority2Expr()
+    {
+        $this->assertEquals('1 = 1 AND 2 = 2', (string) $this->_expr->andx(array((string) $this->_expr->eq(1, 1), 2), array((string) $this->_expr->eq(2, 2), 1)));
+    }
+
+    public function testAndOrderPriority3Expr()
+    {
+        $this->assertEquals('2 = 2 AND 1 = 1', (string) $this->_expr->andx(array((string) $this->_expr->eq(1, 1), 1), array((string) $this->_expr->eq(2, 2), 2)));
+    }
+
     public function testIntelligentParenthesisPreventionAndExpr()
     {
         $this->assertEquals(
@@ -125,6 +140,21 @@ class ExprTest extends \Doctrine\Tests\OrmTestCase
     public function testOrExpr()
     {
         $this->assertEquals('1 = 1 OR 2 = 2', (string) $this->_expr->orx((string) $this->_expr->eq(1, 1), (string) $this->_expr->eq(2, 2)));
+    }
+
+    public function testOrOrderPriority1Expr()
+    {
+        $this->assertEquals('1 = 1 OR 2 = 2', (string) $this->_expr->orx(array((string) $this->_expr->eq(1, 1), 1), array((string) $this->_expr->eq(2, 2), 1)));
+    }
+
+    public function testOrOrderPriority2Expr()
+    {
+        $this->assertEquals('1 = 1 OR 2 = 2', (string) $this->_expr->orx(array((string) $this->_expr->eq(1, 1), 2), array((string) $this->_expr->eq(2, 2), 1)));
+    }
+
+    public function testOrOrderPriority3Expr()
+    {
+        $this->assertEquals('2 = 2 OR 1 = 1', (string) $this->_expr->orx(array((string) $this->_expr->eq(1, 1), 1), array((string) $this->_expr->eq(2, 2), 2)));
     }
 
     public function testAbsExpr()
