@@ -220,6 +220,17 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :uid AND u.id = :uid2');
     }
 
+    public function testAndWhereOrderPriority()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where(array('u.id = :uid', 1))
+            ->andWhere(array('u.id = :uid2', 2));
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :uid2 AND u.id = :uid');
+    }
+
     public function testOrWhere()
     {
         $qb = $this->_em->createQueryBuilder()
@@ -229,6 +240,17 @@ class QueryBuilderTest extends \Doctrine\Tests\OrmTestCase
             ->orWhere('u.id = :uid2');
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :uid OR u.id = :uid2');
+    }
+
+    public function testOrWhereOrderPriority()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('u')
+            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+            ->where(array('u.id = :uid', 1))
+            ->orWhere(array('u.id = :uid2', 2));
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :uid2 OR u.id = :uid');
     }
 
     public function testComplexAndWhereOrWhereNesting()
