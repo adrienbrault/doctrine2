@@ -416,6 +416,18 @@ class SchemaTool
                 unset($mapping['options']['fixed']);
             }
 
+            if (isset($mapping['options']['charset'])) {
+                $options['platformOptions']['charset'] = $mapping['options']['charset'];
+
+                unset($mapping['options']['charset']);
+            }
+
+            if (isset($mapping['options']['collation'])) {
+                $options['platformOptions']['collation'] = $mapping['options']['collation'];
+
+                unset($mapping['options']['collation']);
+            }
+
             $options['customSchemaOptions'] = $mapping['options'];
         }
 
