@@ -375,7 +375,9 @@ class SchemaTool
         }
 
         $options['platformOptions'] = array();
-        $options['platformOptions']['version'] = $class->isVersioned && $class->versionField == $mapping['fieldName'] ? true : false;
+        if ($class->isVersioned && $class->versionField == $mapping['fieldName']) {
+            $options['platformOptions']['version'] = true;
+        }
 
         if(strtolower($columnType) == 'string' && $options['length'] === null) {
             $options['length'] = 255;
@@ -422,10 +424,10 @@ class SchemaTool
                 unset($mapping['options']['charset']);
             }
 
-            if (isset($mapping['options']['collation'])) {
-                $options['platformOptions']['collation'] = $mapping['options']['collation'];
+            if (isset($mapping['options']['collate'])) {
+                $options['platformOptions']['collate'] = $mapping['options']['collate'];
 
-                unset($mapping['options']['collation']);
+                unset($mapping['options']['collate']);
             }
 
             $options['customSchemaOptions'] = $mapping['options'];
